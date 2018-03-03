@@ -3,6 +3,7 @@
     <string name="label_default_text">304.74</string>
     <string name="label_error_text">Error</string>
     <string name="base">Base Currency</string>
+    <string name="forg">Equ. Currency</string>
     <string name="imageview_desc">Bitcoin Logo</string>
 
     <string-array name="currency_array">
@@ -19,6 +20,7 @@
         <item>SEK</item>
         <item>USD</item>
         <item>ZAR</item>
+        <item>BTC</item>
     </string-array>
 
 

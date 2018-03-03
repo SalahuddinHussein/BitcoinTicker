@@ -19,9 +19,11 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
-    private  final String BASE_URL="https://apiv2.bitcoinaverage.com/indices/global/ticker/BTC";
+    public  String baseCur,equvCur;
+
+    private  final String BASE_URL="https://api.fixer.io/latest?base=";
     TextView mPriceTextView;
-    Spinner mSpinner;
+    Spinner mSpinner,mSpinner2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,41 +32,37 @@ public class MainActivity extends AppCompatActivity {
 
         mPriceTextView=findViewById(R.id.priceLabel);
         mSpinner=findViewById(R.id.currency_spinner);
+        mSpinner2=findViewById(R.id.currency_spinner2);
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this,
                 R.array.currency_array,R.layout.spinner_item);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinner.setAdapter(adapter);
+        mSpinner2.setAdapter(adapter);
 
+        mSpinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("Bit","Second Coin: "+parent.getItemAtPosition(position).toString());
+                equvCur=parent.getItemAtPosition(position).toString();
+                updateCurrency();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("Bit",parent.getItemAtPosition(position).toString());
-                String equvCur=parent.getItemAtPosition(position).toString();
-                updateCurrency(equvCur);
+                Log.d("Bit","First Coin: "+parent.getItemAtPosition(position).toString());
+                baseCur=parent.getItemAtPosition(position).toString();
+                updateCurrency();
 
             }
 
-            private void updateCurrency(String equvCur) {
-                String URL=BASE_URL+equvCur;
-                AsyncHttpClient client=new AsyncHttpClient();
-                client.get(URL,new JsonHttpResponseHandler(){
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response){
-                        Log.d("Bit",response.toString());
-                        try {
-                            mPriceTextView.setText(response.getString("ask"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
 
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response){
-
-                    }
-
-                });
-            }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -73,5 +71,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+    private void updateCurrency() {
+        String URL=BASE_URL+baseCur;
+        Log.d("Bit",URL);
+        AsyncHttpClient client=new AsyncHttpClient();
+        client.get(URL,new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response){
+                Log.d("Bit",response.toString());
+                try {
+                    if(baseCur==equvCur){
+                        mPriceTextView.setText("1");
+                    }else
+
+                    mPriceTextView.setText(response.getJSONObject("rates").getString(equvCur));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response){
+                Log.d("Bit","Sync Fail");
+
+            }
+
+        });
     }
 }
