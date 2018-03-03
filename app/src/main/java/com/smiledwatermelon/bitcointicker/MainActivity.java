@@ -19,7 +19,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
-    public  String baseCur,equvCur;
+    public  String baseCur="USD";
+    public String equvCur="USD";
 
     private  final String BASE_URL="https://api.fixer.io/latest?base=";
     TextView mPriceTextView;
